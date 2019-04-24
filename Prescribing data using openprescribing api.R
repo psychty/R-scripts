@@ -41,7 +41,13 @@ spending_acute_diarrhoea_09G <- read_csv(paste0("https://openprescribing.net/api
 
 spending_acute_diarrhoea_all_ccgs <- read_csv(paste0("https://openprescribing.net/api/1.0/spending_by_ccg/?code=", code_x, "&org=&format=csv"), col_types = cols(actual_cost = col_double(),date = col_date(format = ""),items = col_double(), quantity = col_double(), row_id = col_character(),row_name = col_character())) %>% 
   mutate(Code = code_x) %>% 
-  left_join(BNF_sections, by = c("Code" = "BNF Section Code"))
+  left_join(BNF_sections, by = c("Code" = "BNF Section Code")) %>% 
+  group_by(date) %>% 
+  arrange(desc(quantity)) %>% 
+  mutate(Rank = row_number()) %>% 
+  mutate(decile = ntile(quantity, 10)) %>% 
+  mutate(percentile = ntile(quantity, 100))
+
 
 paste0("The most recently available data are for ", format(max(spending_acute_diarrhoea_all_ccgs$date), "%B %Y"), ".")
 # what are the most recent six time periods 
@@ -67,6 +73,47 @@ df_1 <- spending_acute_diarrhoea_all_ccgs %>%
 
 # We will have to explore a way of calling all prescribing for a particular practice from the api.
 # If we just leave the code= blank it will return all items. Instead I think we have to use a loop to capture each area and each relevant code, storing each into an overall dataframe.
+
+names(df_x)
+
+combined_df <- data.frame(actual_cost = numeric(), date = character(), items = numeric(),quantity = numeric(), row_id = character(), row_name = character(), Code = character(), `BNF Chapter` = character(), `BNF Chapter Code` = character(), `BNF Section` = character(), Rank = numeric(), decile = numeric(), percentile = numeric(), check.names = FALSE)
+
+org_x = ""
+
+for(i in 1:length(unique(BNF_sections$`BNF Section Code`))){
+  code_x = BNF_sections$`BNF Section Code`[i]
+
+  # if(code_x %in% c("0108","0210", "0213", "0305", "0306")) {
+  #   print(paste0("Skipping ", code_x))
+  #   next
+  # }  
+    
+  
+df_x <- read_csv(paste0("https://openprescribing.net/api/1.0/spending_by_ccg/?code=", code_x, "&org=", org_x,"&format=csv"), col_types = cols(actual_cost = col_double(),date = col_date(format = ""),items = col_double(), quantity = col_double(), row_id = col_character(),row_name = col_character())) %>% 
+    mutate(Code = code_x) %>% 
+    left_join(BNF_sections, by = c("Code" = "BNF Section Code")) %>% 
+    mutate(date = as.character(date)) %>% 
+    group_by(date) %>% 
+    arrange(desc(quantity)) %>% 
+    mutate(Rank = row_number()) %>% 
+    mutate(decile = ntile(quantity, 10)) %>% 
+    mutate(percentile = ntile(quantity, 100))
+
+combined_df <- combined_df %>% 
+  bind_rows(df_x)
+
+}
+
+spending_acute_diarrhoea_all_ccgs <- read_csv(paste0("https://openprescribing.net/api/1.0/spending_by_ccg/?code=", code_x, "&org=&format=csv"), col_types = cols(actual_cost = col_double(),date = col_date(format = ""),items = col_double(), quantity = col_double(), row_id = col_character(),row_name = col_character())) %>% 
+  mutate(Code = code_x) %>% 
+  left_join(BNF_sections, by = c("Code" = "BNF Section Code")) %>% 
+  group_by(date) %>% 
+  arrange(desc(quantity)) %>% 
+  mutate(Rank = row_number()) %>% 
+  mutate(decile = ntile(quantity, 10)) %>% 
+  mutate(percentile = ntile(quantity, 100))
+
+
 
 # Organisation details - https://openprescribing.net/api/1.0/org_details/?
 
