@@ -66,6 +66,8 @@ df_1 <- spending_acute_diarrhoea_all_ccgs %>%
 
 list_size <- read_csv("https://openprescribing.net/api/1.0/org_details/?org_type=practice&org=09G&keys=total_list_size&format=csv")
 
+# You could also include register size from QOF - note that age ranges sometimes differ (e.g. diabetes is 17+ whilst prescribing data will be all ages)
+# https://digital.nhs.uk/data-and-information/publications/statistical/quality-and-outcomes-framework-achievement-prevalence-and-exceptions-data/2017-18
 
 # NHS recommends some items are not routinely prescribed https://www.england.nhs.uk/wp-content/uploads/2017/11/items-which-should-not-be-routinely-precscribed-in-pc-ccg-guidance.pdf
 
@@ -100,13 +102,13 @@ Prescribing_July$BNF_equivalent <- substr(Prescribing_July$BNF_code, 14, 15)
 # Item figures do not provide any indication of the length of treatment or quantity of medicine prescribed. (The quantity is given in the 'Quantity' field, described below).
 # Patients with a long term condition usually get regular prescriptions. Whilst many prescriptions are for one month, (28 or 30 days supply), others will be for various lengths of treatment and quantity
 
-# The net ingredient cost (NIC) is the basic price of a drug i.e. the price listed in the Drug Tariff or price lists. NIC refers to the basic cost of the drug and does not include any dispensing costs, fees or discount. It does not include any adjustment for income obtained where a prescription charge is paid at the time the prescription is dispensed or where the patient has purchased a pre-payment certificate. The figures are in £s and pence.
+# The net ingredient cost (NIC) is the basic price of a drug i.e. the price listed in the Drug Tariff or price lists. NIC refers to the basic cost of the drug and does not include any dispensing costs, fees or discount. It does not include any adjustment for income obtained where a prescription charge is paid at the time the prescription is dispensed or where the patient has purchased a pre-payment certificate. The figures are in Â£s and pence.
 
 # Actual Cost
 # From July 2012 onwards, the formula used to calculate 'Actual Cost' has been changed to include the new reimbursement payments which will be charged back to practices from dispensed prescriptions. 
 # Actual Cost = (Net Ingredient Cost less discount) + Payment for Consumables (previously known as Container Allowance) + Payment for Containers + Out of Pocket Expenses
 # Prior to July 2012 this Actual Cost was defined as the Net Ingredient Cost less the average discount percentage received by pharmacists calculated from the previous month, plus container allowance. This is the estimated cost to the NHS, which is lower than NIC.
-# Community pharmacists are reimbursed for medicines they have dispensed on the basis of the NIC less a deduction related to the discount that they are assumed to have received from their suppliers (for details see the Drug Tariff Part V - Deduction Scale). A container allowance is then added (see Drug Tariff Part IV). The figures are in £s and pence.
+# Community pharmacists are reimbursed for medicines they have dispensed on the basis of the NIC less a deduction related to the discount that they are assumed to have received from their suppliers (for details see the Drug Tariff Part V - Deduction Scale). A container allowance is then added (see Drug Tariff Part IV). The figures are in Â£s and pence.
 # Note: electronic Drug Tariff can be found at:  http://www.ppa.org.uk/ppa/edt_intro.htm
 
 
