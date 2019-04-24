@@ -43,11 +43,10 @@ spending_acute_diarrhoea_all_ccgs <- read_csv(paste0("https://openprescribing.ne
   mutate(Code = code_x) %>% 
   left_join(BNF_sections, by = c("Code" = "BNF Section Code"))
 
-# practices are ordered by mean percentile over the past six months, with the worst-performing at the top. Each chart shows the results for the individual practice, plus deciles across all practices in the NHS in England. 
-
 paste0("The most recently available data are for ", format(max(spending_acute_diarrhoea_all_ccgs$date), "%B %Y"), ".")
 # what are the most recent six time periods 
 
+# We don't need to do this, it was just the way the charts are ordered on the website (average rank over past six months). We do however want to calculat the percentile and decile as in df_1
 six_month_time <- spending_acute_diarrhoea_all_ccgs %>% 
   select(date) %>%
   unique() %>% 
@@ -61,6 +60,13 @@ df_1 <- spending_acute_diarrhoea_all_ccgs %>%
   mutate(Rank = row_number()) %>% 
   mutate(decile = ntile(quantity, 10)) %>% 
   mutate(percentile = ntile(quantity, 100))
+
+# Stephen Black had a greta idea to produce an area plot of the prescribing for a particular Practice or CCG grouped by BNF chapter name. https://public.tableau.com/profile/matt.black#!/vizhome/summaryprescribingdatav1_1/Notes
+
+# coloured by chapter, boxes by section - data included in tooltip = "Analgesics is part of the Central Nervous System BNF chapter This sections consists of 4 paragraphs The section contains 57 different drugs with 1,007 different formulations Over this time period the NHS has spent	 	£2,700.56M on these drugs  and has issued 375.54M prescriptions at an average cost of £7.19 That's an average of 5,689,997 prescriptions and £40.92M per month.
+
+# We will have to explore a way of calling all prescribing for a particular practice from the api.
+# If we just leave the code= blank it will return all items. Instead I think we have to use a loop to capture each area and each relevant code, storing each into an overall dataframe.
 
 # Organisation details - https://openprescribing.net/api/1.0/org_details/?
 
